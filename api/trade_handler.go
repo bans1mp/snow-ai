@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/bans1mp/snow-ai/db"
 	"github.com/bans1mp/snow-ai/engine"
-	"github.com/bans1mp/snow-ai/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,24 +33,17 @@ func PlaceOrder(market *engine.Market) gin.HandlerFunc {
 			return
 		}
 
-		u, ok := user.UserStore[req.UserID]
-		if !ok {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
-			return
-		}
-
-		isBuy := req.Side == "BUY"
-		err := u.ExecuteTrade(req.Ticker, req.Quantity, currentPrice, isBuy)
+		err := db.ExecuteTransaction(req.UserID, req.Ticker, req.Quantity, currentPrice, req.Side == "BUY")
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
+		newBalance, _ := db.GetUserBalance(req.UserID)
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Order Filled",
+			"message": "Order Filled & Persisted",
 			"execution_price": currentPrice,
-			"remaining_cash": u.Cash,
-			"holdings": u.Holdings,
+			"new_balance": newBalance,
 		})
 	}
 }
