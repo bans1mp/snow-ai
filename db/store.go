@@ -4,14 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 )
 
 var DB *sql.DB
 
-func Init(connStr string) {
+func Init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, assuming environment variables are set.")
+	}
 	var err error
+	connStr := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
 	DB, err = sql.Open("pgx", connStr)
 	if err != nil {
 		log.Fatal(err)
@@ -20,7 +26,7 @@ func Init(connStr string) {
 	if err = DB.Ping(); err != nil {
 		log.Fatal("Could not connect to DB:", err)
 	}
-	fmt.Println("✅ Connected to PostgreSQL")
+	fmt.Println("Connected to PostgreSQL")
 }
 
 // GetUserBalance fetches the latest cash from DB

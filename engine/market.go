@@ -4,6 +4,8 @@ import (
 	"math"
 	"math/rand/v2"
 	"sync"
+
+	"github.com/bans1mp/snow-ai/db"
 )
 
 type Stock struct {
@@ -19,8 +21,32 @@ type Market struct {
 }
 
 func NewMarket() *Market {
-	return &Market{
-		Stocks: make(map[string]*Stock),
+	return &Market{}
+}
+
+func (m *Market) InitStocks() {
+	m.Stocks = make(map[string]*Stock)
+	rows, err := db.DB.Query("SELECT ticker, price, volatility, drift FROM stocks")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var ticker string
+		var price float64
+		var volatility float64
+		var drift float64
+		err = rows.Scan(&ticker, &price, &volatility, &drift)
+		if err != nil {
+			panic(err)
+		}
+		m.Stocks[ticker] = &Stock{
+			Ticker: ticker,
+			Price: price,
+			Volatility: volatility,
+			Drift: drift,
+		}
 	}
 }
 
