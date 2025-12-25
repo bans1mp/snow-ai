@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TO ADD JANITOR AUTH AND TIMESCALEDB
 func main() {
 	db.Init()
 
