@@ -1,32 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
-// --- MOCK DATA (As requested) ---
-const MOCK_INDICES = [
-    { name: "NIFTY_SIM", value: 21450.20, change: "+1.2%", trend: "up" },
-    { name: "BANK_SIM", value: 45200.10, change: "-0.5%", trend: "down" },
-    { name: "VIX_SIM", value: 14.2, change: "+2.1%", trend: "up" }
+// --- MOCK DATA ---
+const MOCK_PREVIEW_CHART = [
+    { val: 100 }, { val: 120 }, { val: 110 }, { val: 140 }, { val: 130 }, { val: 160 }
 ];
 
-const MOCK_PORTFOLIO = {
-    totalValue: "₹1,24,500.00",
-    cash: "₹45,000.00",
-    invested: "₹79,500.00",
-    dayChange: "+₹1,200 (0.9%)"
+const USER_PLAN = {
+    type: "PRO TRADER",
+    expires: "Dec 31, 2025",
 };
-
-const MOCK_TRADES = [
-    { id: 1, ticker: "NIFTY_SIM", side: "BUY", price: 21400, time: "10:30 AM" },
-    { id: 2, ticker: "BANK_SIM", side: "SELL", price: 45150, time: "09:45 AM" },
-    { id: 3, ticker: "NIFTY_SIM", side: "BUY", price: 21380, time: "Yesterday" },
-];
-
-const MOCK_CHART_DATA = [
-    { val: 21000 }, { val: 21100 }, { val: 21050 }, { val: 21200 }, { val: 21150 }, { val: 21450 }
-];
-
-// --- COMPONENT ---
 
 function Home() {
     const navigate = useNavigate();
@@ -37,108 +21,86 @@ function Home() {
             {/* Navbar */}
             <nav style={styles.navbar}>
                 <div style={styles.navContent}>
+                    {/* Brand logo is now pure white for contrast */}
                     <div style={styles.brandLogo}>
-                        <span style={{ color: colors.pastelBlue }}>QUANT</span>LAB
+                        <span style={{ fontWeight: '300' }}>QUANT</span>LAB
                     </div>
                     <div style={styles.navLinks}>
-                        <span style={styles.activeLink}>Overview</span>
-                        <span onClick={() => navigate('/dashboard')} style={styles.navLink}>Trade Terminal</span>
-                        <span style={styles.navLink} onClick={() => { localStorage.removeItem('token'); navigate('/'); }}>Logout</span>
+                        <button style={styles.logoutBtn} onClick={() => { localStorage.removeItem('token'); navigate('/'); }}>
+                            Sign Out
+                        </button>
                     </div>
                 </div>
             </nav>
 
-            {/* Main Grid Content */}
+            {/* Main Content */}
             <div style={styles.container}>
 
-                {/* Header Section */}
+                {/* Welcome Header */}
                 <header style={styles.header}>
-                    <div>
-                        <h1 style={styles.welcomeText}>Good Morning, {userId}</h1>
-                        <p style={styles.dateText}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-                    </div>
-                    <button style={styles.tradeButton} onClick={() => navigate('/dashboard')}>
-                        + New Order
-                    </button>
+                    <h1 style={styles.welcomeText}>Welcome back, {userId}</h1>
+                    <p style={styles.subText}>Your command center is ready.</p>
                 </header>
 
-                {/* THE GRID */}
+                {/* --- ACTION GRID --- */}
                 <div style={styles.grid}>
 
-                    {/* 1. Market Pulse Cards (Row 1) */}
-                    <div style={styles.cardFullWidth}>
-                        <h3 style={styles.sectionTitle}>Market Pulse</h3>
-                        <div style={styles.tickerRow}>
-                            {MOCK_INDICES.map((idx) => (
-                                <div key={idx.name} style={styles.tickerCard}>
-                                    <div style={styles.tickerTop}>
-                                        <span style={styles.tickerName}>{idx.name}</span>
-                                        <span style={{ ...styles.tickerChange, color: idx.trend === 'up' ? colors.green : colors.red }}>
-                                            {idx.change}
-                                        </span>
-                                    </div>
-                                    <div style={styles.tickerValue}>{idx.value.toLocaleString()}</div>
-                                    {/* Tiny Mock Chart */}
-                                    <div style={{ height: '40px', marginTop: '10px' }}>
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <LineChart data={MOCK_CHART_DATA}>
-                                                <Line type="monotone" dataKey="val" stroke={idx.trend === 'up' ? colors.green : colors.red} strokeWidth={2} dot={false} />
-                                            </LineChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* 2. Portfolio Summary (Row 2, Col 1) */}
-                    <div style={styles.card}>
-                        <h3 style={styles.sectionTitle}>Portfolio Snapshot</h3>
-                        <div style={styles.portfolioStats}>
-                            <div style={styles.statItem}>
-                                <span style={styles.statLabel}>Net Worth</span>
-                                <span style={styles.statValueBig}>{MOCK_PORTFOLIO.totalValue}</span>
+                    {/* PANEL 1: START TRADING (Hero Card - Dark Gradient) */}
+                    <div style={styles.heroCard} onClick={() => navigate('/marketplace')}>
+                        <div style={styles.heroBgDecoration}></div>
+                        <div style={{ position: 'relative', zIndex: 2 }}>
+                            <div style={styles.cardHeader}>
+                                <span style={styles.cardTag}>LIVE MARKET</span>
+                                <div style={styles.liveDot}></div>
                             </div>
-                            <div style={styles.statRow}>
-                                <div style={styles.statItem}>
-                                    <span style={styles.statLabel}>Cash Balance</span>
-                                    <span style={styles.statValue}>{MOCK_PORTFOLIO.cash}</span>
-                                </div>
-                                <div style={styles.statItem}>
-                                    <span style={styles.statLabel}>Invested</span>
-                                    <span style={styles.statValue}>{MOCK_PORTFOLIO.invested}</span>
-                                </div>
-                            </div>
+                            <h2 style={styles.cardTitle}>Start Trading</h2>
+                            <p style={styles.cardDesc}>Access real-time feeds and execute orders on NIFTY_SIM.</p>
                         </div>
+
+                        {/* Visual Decoration: Mini Chart (Subtle gray line) */}
+                        <div style={styles.miniChartContainer}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={MOCK_PREVIEW_CHART}>
+                                    {/* Stroke color changed to subtle white/gray */}
+                                    <Line type="monotone" dataKey="val" stroke="rgba(255,255,255,0.15)" strokeWidth={3} dot={false} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div style={styles.arrowIcon}>→</div>
                     </div>
 
-                    {/* 3. Recent Activity (Row 2, Col 2) */}
-                    <div style={styles.card}>
-                        <h3 style={styles.sectionTitle}>Recent Activity</h3>
-                        <ul style={styles.activityList}>
-                            {MOCK_TRADES.map((trade) => (
-                                <li key={trade.id} style={styles.activityItem}>
-                                    <div style={styles.activityLeft}>
-                                        <span style={{ ...styles.badge, backgroundColor: trade.side === 'BUY' ? colors.lightGreen : colors.lightRed, color: trade.side === 'BUY' ? colors.green : colors.red }}>
-                                            {trade.side}
-                                        </span>
-                                        <span style={styles.activityTicker}>{trade.ticker}</span>
-                                    </div>
-                                    <div style={styles.activityRight}>
-                                        <span style={styles.activityPrice}>@{trade.price}</span>
-                                        <span style={styles.activityTime}>{trade.time}</span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* 4. AI Insight / Footer (Row 3 Full) */}
-                    <div style={{ ...styles.cardFullWidth, backgroundColor: colors.gradientBg, color: 'white' }}>
-                        <h3 style={{ ...styles.sectionTitle, color: 'white' }}>🤖 Quant Analyst Note</h3>
-                        <p style={{ opacity: 0.9, lineHeight: '1.6' }}>
-                            "NIFTY_SIM is showing strong momentum above the 21,400 resistance level. Volatility remains low, suggesting a stable uptrend for the intraday session. Consider accumulating on dips."
+                    {/* PANEL 2: SUBSCRIPTION STATUS (Matte Black Card) */}
+                    <div style={styles.infoCard}>
+                        <div style={styles.iconCircle}>💎</div>
+                        <h3 style={styles.infoTitle}>Your Plan</h3>
+                        <div style={styles.planBadge}>{USER_PLAN.type}</div>
+                        <p style={styles.infoDesc}>
+                            Next billing: <strong>{USER_PLAN.expires}</strong>
                         </p>
+                        <button style={styles.secondaryBtn}>Manage Billing</button>
+                    </div>
+
+                    {/* PANEL 3: PORTFOLIO QUICK VIEW (Matte Black Card) */}
+                    <div style={styles.infoCard}>
+                        <div style={styles.iconCircle}>💰</div>
+                        <h3 style={styles.infoTitle}>Net Worth</h3>
+                        <h2 style={styles.balanceText}>₹1,24,500</h2>
+                        {/* Using a distinct green for positive change that pops against black */}
+                        <p style={{ ...styles.infoDesc, color: colors.neonGreen }}>
+                            ▲ 4.2% this week
+                        </p>
+                        <button style={styles.secondaryBtn} onClick={() => alert("Portfolio Analysis Feature Coming Soon!")}>
+                            View Analysis
+                        </button>
+                    </div>
+
+                    {/* PANEL 4: AI INSIGHTS (Locked - Darker/Disabled look) */}
+                    <div style={styles.lockedCard}>
+                        <div style={styles.lockIcon}>🔒</div>
+                        <h3 style={styles.lockedTitle}>AI Analyst</h3>
+                        <p style={styles.lockedDesc}>Unlock predictive signals for NIFTY_SIM.</p>
+                        <button style={styles.upgradeBtn}>Upgrade to Unlock</button>
                     </div>
 
                 </div>
@@ -147,145 +109,172 @@ function Home() {
     );
 }
 
-// --- STYLES (Professional & Sleek) ---
+// --- STYLES (Premium Dark Mode) ---
 
 const colors = {
-    bgMain: '#F3F4F6',      // Cool Gray 100
-    bgCard: '#FFFFFF',
-    textDark: '#111827',    // Cool Gray 900
-    textLight: '#6B7280',   // Cool Gray 500
-    pastelBlue: '#3B82F6',  // Blue 500
-    green: '#10B981',       // Emerald 500
-    red: '#EF4444',         // Red 500
-    lightGreen: '#D1FAE5',
-    lightRed: '#FEE2E2',
-    border: '#E5E7EB',
-    gradientBg: '#4F46E5',  // Indigo 600
+    bgMain: '#000000',       // Pure Black background
+    bgCard: '#111111',       // Very dark gray for cards
+    bgHero: '#1A1A1A',       // Slightly lighter for Hero
+    textMain: '#FFFFFF',     // Pure White text
+    textSub: '#888888',      // Gray text for secondary info
+    border: '#222222',       // Subtle dark borders
+    neonGreen: '#39FF14',    // A sharp neon green for positive indicators
+    iconBg: '#1A1A1A',       // Background for icon circles
 };
 
 const styles = {
     pageWrapper: {
         minHeight: '100vh',
         backgroundColor: colors.bgMain,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        color: colors.textDark,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        color: colors.textMain,
     },
     navbar: {
-        backgroundColor: colors.bgCard,
+        backgroundColor: colors.bgMain, // Navbar blends into background
         borderBottom: `1px solid ${colors.border}`,
-        padding: '0.8rem 0',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
+        padding: '1rem 0',
     },
     navContent: {
-        maxWidth: '1200px',
+        maxWidth: '1000px',
         margin: '0 auto',
         padding: '0 20px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    brandLogo: { fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px' },
-    navLinks: { display: 'flex', gap: '30px' },
-    navLink: { color: colors.textLight, cursor: 'pointer', fontWeight: '500', transition: 'color 0.2s' },
-    activeLink: { color: colors.pastelBlue, fontWeight: '600', cursor: 'default' },
+    brandLogo: { fontSize: '1.5rem', fontWeight: '800', letterSpacing: '1px', color: colors.textMain },
+    logoutBtn: {
+        border: `1px solid ${colors.border}`,
+        padding: '6px 12px',
+        borderRadius: '4px',
+        background: 'none',
+        color: colors.textSub,
+        cursor: 'pointer',
+        fontSize: '0.8rem',
+        fontWeight: '500',
+        transition: 'all 0.2s',
+    },
 
     container: {
-        maxWidth: '1200px',
+        maxWidth: '1000px',
         margin: '0 auto',
-        padding: '40px 20px',
+        padding: '60px 20px',
     },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '40px',
-    },
-    welcomeText: { fontSize: '2rem', fontWeight: '700', marginBottom: '5px' },
-    dateText: { color: colors.textLight, fontSize: '1rem' },
-    tradeButton: {
-        backgroundColor: colors.textDark,
-        color: 'white',
-        border: 'none',
-        padding: '12px 24px',
-        borderRadius: '8px',
-        fontWeight: '600',
-        cursor: 'pointer',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-    },
+    header: { marginBottom: '40px' },
+    welcomeText: { fontSize: '2.5rem', fontWeight: '700', marginBottom: '10px', letterSpacing: '-1px' },
+    subText: { fontSize: '1.1rem', color: colors.textSub },
 
-    // GRID SYSTEM
+    // --- GRID ---
     grid: {
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '24px',
     },
-    card: {
-        backgroundColor: colors.bgCard,
+
+    // 1. HERO CARD (Start Trading - The Premium Grayscale Card)
+    heroCard: {
+        gridColumn: '1 / -1',
+        backgroundColor: colors.bgHero,
+        // Subtle gradient for a premium feel
+        background: `linear-gradient(135deg, ${colors.bgHero} 0%, #0A0A0A 100%)`,
         borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        padding: '32px',
+        color: colors.textMain,
+        cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden',
         border: `1px solid ${colors.border}`,
+        // A very subtle white glow instead of a shadow
+        boxShadow: '0 0 20px rgba(255, 255, 255, 0.03)',
+        transition: 'transform 0.2s, border-color 0.2s',
     },
-    cardFullWidth: {
-        gridColumn: '1 / -1', // Spans both columns
-        backgroundColor: colors.bgCard,
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        border: `1px solid ${colors.border}`,
+    cardHeader: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' },
+    cardTag: { fontSize: '0.7rem', fontWeight: '700', letterSpacing: '1px', color: colors.textSub },
+    // Neon green dot pops against the black
+    liveDot: { width: '6px', height: '6px', backgroundColor: colors.neonGreen, borderRadius: '50%', boxShadow: `0 0 6px ${colors.neonGreen}` },
+    cardTitle: { fontSize: '2rem', fontWeight: '700', marginBottom: '8px' },
+    cardDesc: { fontSize: '1.1rem', color: colors.textSub, maxWidth: '400px', lineHeight: '1.5' },
+    miniChartContainer: {
+        position: 'absolute',
+        right: '-20px',
+        bottom: '-30px',
+        width: '300px',
+        height: '150px',
+        opacity: 0.6,
+        filter: 'grayscale(100%)', // Ensure chart is monochrome
+    },
+    arrowIcon: {
+        position: 'absolute',
+        right: '32px',
+        top: '32px',
+        fontSize: '1.5rem',
+        fontWeight: '300',
+        color: colors.textMain,
     },
 
-    sectionTitle: {
-        fontSize: '1.1rem',
-        fontWeight: '700',
-        marginBottom: '20px',
-        letterSpacing: '-0.3px',
-    },
-
-    // Ticker Cards
-    tickerRow: { display: 'flex', gap: '20px', flexWrap: 'wrap' },
-    tickerCard: {
-        flex: 1,
-        border: `1px solid ${colors.border}`,
+    // 2. INFO CARDS (Matte Black)
+    infoCard: {
+        backgroundColor: colors.bgCard,
         borderRadius: '12px',
-        padding: '16px',
-        minWidth: '200px',
-    },
-    tickerTop: { display: 'flex', justifyContent: 'space-between', marginBottom: '10px' },
-    tickerName: { fontWeight: '600', color: colors.textLight },
-    tickerChange: { fontWeight: '700', fontSize: '0.9rem' },
-    tickerValue: { fontSize: '1.5rem', fontWeight: '700', color: colors.textDark },
-
-    // Portfolio
-    portfolioStats: { display: 'flex', flexDirection: 'column', gap: '24px' },
-    statItem: { display: 'flex', flexDirection: 'column' },
-    statLabel: { color: colors.textLight, fontSize: '0.9rem', marginBottom: '4px' },
-    statValueBig: { fontSize: '2.5rem', fontWeight: '800', color: colors.textDark },
-    statValue: { fontSize: '1.25rem', fontWeight: '600', color: colors.textDark },
-    statRow: { display: 'flex', gap: '40px', borderTop: `1px solid ${colors.border}`, paddingTop: '20px' },
-
-    // Activity List
-    activityList: { listStyle: 'none', padding: 0, margin: 0 },
-    activityItem: {
+        padding: '24px',
+        border: `1px solid ${colors.border}`,
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '12px 0',
-        borderBottom: `1px solid ${colors.border}`
+        flexDirection: 'column',
+        alignItems: 'flex-start',
     },
-    activityLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
-    badge: {
-        padding: '4px 8px',
+    iconCircle: {
+        width: '36px', height: '36px', backgroundColor: colors.iconBg, borderRadius: '8px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', fontSize: '1rem',
+        border: `1px solid ${colors.border}`
+    },
+    infoTitle: { fontSize: '0.9rem', fontWeight: '600', color: colors.textSub, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' },
+    planBadge: {
+        backgroundColor: colors.textMain, color: colors.bgMain, padding: '4px 10px', borderRadius: '4px',
+        fontSize: '0.8rem', fontWeight: '800', marginBottom: '16px', letterSpacing: '0.5px'
+    },
+    balanceText: { fontSize: '2rem', fontWeight: '700', color: colors.textMain, marginBottom: '4px' },
+    infoDesc: { fontSize: '0.85rem', color: colors.textSub, marginBottom: '24px' },
+    secondaryBtn: {
+        marginTop: 'auto',
+        width: '100%',
+        padding: '12px',
         borderRadius: '6px',
-        fontSize: '0.75rem',
-        fontWeight: '700'
+        border: `1px solid ${colors.border}`,
+        backgroundColor: 'transparent',
+        color: colors.textMain,
+        fontWeight: '600',
+        fontSize: '0.9rem',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
     },
-    activityTicker: { fontWeight: '600' },
-    activityRight: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' },
-    activityPrice: { fontWeight: '600' },
-    activityTime: { fontSize: '0.8rem', color: colors.textLight },
+
+    // 3. LOCKED CARD (Darker, recessed look)
+    lockedCard: {
+        backgroundColor: '#080808', // Almost pure black
+        borderRadius: '12px',
+        padding: '24px',
+        border: `1px solid #1A1A1A`, // Subtle border
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        opacity: 0.7, // Lower opacity to signal disabled state
+    },
+    lockIcon: { fontSize: '1.8rem', marginBottom: '10px', opacity: 0.5 },
+    lockedTitle: { fontSize: '1.1rem', fontWeight: '600', color: colors.textMain, marginBottom: '5px' },
+    lockedDesc: { fontSize: '0.85rem', color: colors.textSub, marginBottom: '20px' },
+    upgradeBtn: {
+        padding: '10px 20px',
+        borderRadius: '6px',
+        border: `1px solid ${colors.textMain}`,
+        backgroundColor: 'transparent',
+        color: colors.textMain,
+        fontSize: '0.8rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        letterSpacing: '1px',
+    },
 };
 
 export default Home;
